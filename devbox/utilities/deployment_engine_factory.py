@@ -1,4 +1,4 @@
-from utilities.docker_deployment_engine import DockerDeploymentEngine
+from devbox.utilities.docker_deployment_engine import DockerDeploymentEngine
 
 
 class DeploymentEngineFactory(object):
@@ -12,4 +12,4 @@ class DeploymentEngineFactory(object):
         :return: Deployment engine
         :rtype BaseDeploymentEngine
         """
-        return self._deployment_engines[deployment_type];
+        return self._deployment_engines[deployment_type]

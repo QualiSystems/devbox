@@ -1,8 +1,8 @@
 import click
 
-from utilities.deployment_engine_factory import DeploymentEngineFactory
-from utilities.manifest_parser import ManifestParser
-from utilities.provisioning_engine_factory import ProvisioningEngineFactory
+from devbox.utilities.deployment_engine_factory import DeploymentEngineFactory
+from devbox.utilities.manifest_parser import ManifestParser
+from devbox.utilities.provisioning_engine_factory import ProvisioningEngineFactory
 
 
 class PushCommandExecutor(object):

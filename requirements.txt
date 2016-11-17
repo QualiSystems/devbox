@@ -5,3 +5,4 @@ click
 pyyaml
 giturlparse.py
 tosca-parser
+docker-py

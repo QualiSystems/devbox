@@ -18,8 +18,11 @@ def version():
 
 
 @cli.command()
-def push():
+@click.option('--path', default='devbox.yaml', help='Path to manifest file')
+@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(['docker']))
+@click.option('--provision', default='ansible', help='Provisioning to use', type=click.Choice(['ansible']))
+def push(path, deploy, provision):
     """
     Deploy the app
     """
-    PushCommandExecutor().push()
+    PushCommandExecutor().push(path, deploy, provision)

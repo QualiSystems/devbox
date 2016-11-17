@@ -28,19 +28,16 @@ topology_template:
 node_types:
   tosca.nodes.Python:
     derived_from: tosca.nodes.SoftwareComponent
-    capabilities:
-      python:
-        type: tosca.capabilities.Node
-        properties:
-          ansible_playbook:
-            type: string
-            default: meantheory.python
-
-    requirements:
-      - connection1:
-          node: tosca.nodes.WebServer
-          relationship: ConnectsTo
-          capability: Endpoint
+    properties:
+      ansible_playbook:
+        type: string
+        default: meantheory.python
+      docker_image:
+        type: string
+        default: rastasheep/ubuntu-sshd
+      ports:
+        type: list
+        default: []
 """)
 
         os.chdir('my-app')
