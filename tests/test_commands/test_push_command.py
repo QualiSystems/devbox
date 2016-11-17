@@ -10,7 +10,7 @@ class TestPushCommand(fake_filesystem_unittest.TestCase):
 
     def test_build_package_package_created(self):
         # Arrange
-        self.fs.CreateFile('my-app/devbox.yml', contents="""
+        self.fs.CreateFile('my-app/devbox.yaml', contents="""
 tosca_definitions_version: tosca_simple_yaml_1_0
 
 metadata:
@@ -30,7 +30,7 @@ node_types:
     derived_from: tosca.nodes.SoftwareComponent
     capabilities:
       python:
-        type: tosca.capabilities.Feature
+        type: tosca.capabilities.Node
         properties:
           ansible_playbook:
             type: string
@@ -41,14 +41,11 @@ node_types:
           node: tosca.nodes.WebServer
           relationship: ConnectsTo
           capability: Endpoint
-
 """)
+
         os.chdir('my-app')
 
         command_executor = PushCommandExecutor()
 
         # Act
-        command_executor.push('my-app/devbox.yml', 'docker', 'ansible')
-
-        # Assert
-        assertFileExists(self, 'dist/nut_shell.zip')
+        command_executor.push('devbox.yaml', 'docker', 'ansible')
