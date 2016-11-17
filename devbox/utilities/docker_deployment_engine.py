@@ -1,6 +1,10 @@
 from devbox.utilities.base_deployment_engine import BaseDeploymentEngine
+from devbox.exceptions.deployment_error import DeploymentError
 from docker import Client
 from toscaparser.tosca_template import ToscaTemplate
+
+DEPLOYMENT_IMAGE = 'deployment_image'
+DEPLOYMENT_COMMAND = 'deployment_command'
 
 
 class DockerDeploymentEngine(BaseDeploymentEngine):
@@ -11,8 +15,7 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         :type manifest: ToscaTemplate
         :return:
         """
-        cli = Client(base_url='tcp://192.168.11.1:2375')
-        # node : NodeTemplate
+        cli = Client(base_url='tcp://127.0.0.1:2375')
         for node in manifest.topology_template.nodetemplates:
             self._deploy_node(node, cli)
 
@@ -26,14 +29,17 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         :return:
         """
         properties = node.get_properties()
-        if 'docker_image' not in properties:
-            return
-        image = properties['docker_image'].default
+        image = self._get_property_value(properties, DEPLOYMENT_IMAGE)
+        deployment_command = self._get_property_value(properties, DEPLOYMENT_COMMAND)
         if not image:
             return
-        container_id = cli.create_container(image=image,
-                                            command='/bin/sh',
+        container_id = cli.create_container(name=node.name,
+                                            image=image,
+                                            command=deployment_command,
                                             ports=[])
 
-
-
+    @staticmethod
+    def _get_property_value(properties, property_name):
+        if property_name not in properties:
+            raise DeploymentError('Property {0} is not set', property_name)
+        return properties[property_name].default

@@ -1,7 +1,6 @@
 import os
-
 from pyfakefs import fake_filesystem_unittest
-from commands.push_command import PushCommandExecutor
+from devbox.commands.push_command import PushCommandExecutor
 
 
 class TestPushCommand(fake_filesystem_unittest.TestCase):
@@ -12,11 +11,6 @@ class TestPushCommand(fake_filesystem_unittest.TestCase):
         # Arrange
         self.fs.CreateFile('my-app/devbox.yaml', contents="""
 tosca_definitions_version: tosca_simple_yaml_1_0
-
-metadata:
-  template_name: Python Client Server
-  template_author: DevBox
-  template_version: 1.0.0
 
 topology_template:
   node_templates:
@@ -29,12 +23,15 @@ node_types:
   tosca.nodes.Python:
     derived_from: tosca.nodes.SoftwareComponent
     properties:
-      ansible_playbook:
-        type: string
-        default: meantheory.python
-      docker_image:
+      deployment_image:
         type: string
         default: rastasheep/ubuntu-sshd
+      deployment_command:
+        type: string
+        default: /bin/sh
+      provisioning_instruction:
+        type: string
+        default: meantheory.python
       ports:
         type: list
         default: []
