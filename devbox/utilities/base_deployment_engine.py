@@ -7,3 +7,7 @@ class BaseDeploymentEngine(object):
     @abc.abstractmethod
     def deploy(self, manifest):
         raise NotImplementedError('deploy method must be implemented')
+
+    @abc.abstractmethod
+    def destroy(self, manifest):
+        raise NotImplementedError('destroy method must be implemented')

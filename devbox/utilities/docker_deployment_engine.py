@@ -1,3 +1,5 @@
+import click
+
 from devbox.utilities.base_deployment_engine import BaseDeploymentEngine
 from devbox.exceptions.deployment_error import DeploymentError
 from docker import Client
@@ -5,6 +7,7 @@ from toscaparser.tosca_template import ToscaTemplate
 
 DEPLOYMENT_IMAGE = 'deployment_image'
 DEPLOYMENT_COMMAND = 'deployment_command'
+DEPLOYMENT_PORTS = 'deployment_ports'
 
 
 class DockerDeploymentEngine(BaseDeploymentEngine):
@@ -19,6 +22,15 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         for node in manifest.topology_template.nodetemplates:
             self._deploy_node(node, cli)
 
+    def destroy(self, manifest):
+        cli = Client(base_url='tcp://127.0.0.1:2375')
+        containers = cli.containers(all=True)
+        containers_dict = {container['Names'][0].strip('/'): container['Id'] for container in containers}
+        for node in manifest.topology_template.nodetemplates:
+            if node.name in containers_dict:
+                click.echo('Destroying {0}'.format(node.name))
+                cli.remove_container(containers_dict[node.name])
+
     def _deploy_node(self, node, cli):
         """
 
@@ -28,15 +40,16 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         :type cli: docker.Client
         :return:
         """
+        click.echo('Deploying {0}'.format(node.name))
         properties = node.get_properties()
         image = self._get_property_value(properties, DEPLOYMENT_IMAGE)
         deployment_command = self._get_property_value(properties, DEPLOYMENT_COMMAND)
-        if not image:
-            return
+        ports = self._get_property_value(properties, DEPLOYMENT_PORTS)
         container_id = cli.create_container(name=node.name,
                                             image=image,
                                             command=deployment_command,
-                                            ports=[])
+                                            ports=ports)
+        cli.start(container_id)
 
     @staticmethod
     def _get_property_value(properties, property_name):

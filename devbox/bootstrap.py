@@ -1,6 +1,8 @@
 import click
 import pkg_resources
-from commands.push_command import PushCommandExecutor
+
+from devbox.commands.destroy_command import DestroyCommandExecutor
+from devbox.commands.push_command import PushCommandExecutor
 
 
 @click.group()
@@ -9,9 +11,28 @@ def cli():
 
 
 @cli.command()
+def templates():
+    """
+    Display available templates
+    """
+    click.echo('This should retrieve templates from github.com/QualiSystems/devbox-templates')
+
+
+@cli.command()
+@click.argument('name')
+@click.argument('template')
+def clone():
+    """
+    Clone a template into a new directory
+    :return:
+    """
+    click.echo('This should clone a template from github.com/QualiSystems/devbox-templates to local directory')
+
+
+@cli.command()
 def version():
     """
-    Displays the devbox version
+    Display the current version
     """
     distribution = pkg_resources.get_distribution(u'devbox')
     click.echo(u'{} {} from {}'.format(distribution.project_name, distribution.version, distribution.location))
@@ -26,3 +47,13 @@ def push(path, deploy, provision):
     Deploy the app
     """
     PushCommandExecutor().push(path, deploy, provision)
+
+
+@cli.command()
+@click.option('--path', default='devbox.yaml', help='Path to manifest file')
+@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(['docker']))
+def destroy(path, deploy):
+    """
+    Destroy the app
+    """
+    DestroyCommandExecutor().destroy(path, deploy)

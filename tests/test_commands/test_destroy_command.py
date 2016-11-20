@@ -1,13 +1,13 @@
 import os
 from pyfakefs import fake_filesystem_unittest
-from devbox.commands.push_command import PushCommandExecutor
+from commands.destroy_command import DestroyCommandExecutor
 
 
-class TestPushCommand(fake_filesystem_unittest.TestCase):
+class TestDestroyCommand(fake_filesystem_unittest.TestCase):
     def setUp(self):
         self.setUpPyfakefs()
 
-    def test_build_package_package_created(self):
+    def test_app_destroyed(self):
         # Arrange
         self.fs.CreateFile('my-app/devbox.yaml', contents="""
 tosca_definitions_version: tosca_simple_yaml_1_0
@@ -39,7 +39,7 @@ node_types:
 
         os.chdir('my-app')
 
-        command_executor = PushCommandExecutor()
+        command_executor = DestroyCommandExecutor()
 
         # Act
-        command_executor.push('devbox.yaml', 'docker', 'ansible')
+        command_executor.destroy('devbox.yaml', 'docker')
