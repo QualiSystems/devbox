@@ -1,5 +1,5 @@
 import unittest
-from utilities.provisioning_engine_factory import ProvisioningEngineFactory
+from devbox.utilities.provisioning_engine_factory import ProvisioningEngineFactory
 
 
 class TestProvisioningEngineFactory(unittest.TestCase):

@@ -1,5 +1,5 @@
 import unittest
-from utilities.ansible_provisioning_engine import AnsibleProvisioningEngine
+from devbox.utilities.ansible_provisioning_engine import AnsibleProvisioningEngine
 
 
 class TestAnsibleProvisioningEngine(unittest.TestCase):

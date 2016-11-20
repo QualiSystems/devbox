@@ -3,8 +3,8 @@ import pkg_resources
 
 from devbox.commands.destroy_command import DestroyCommandExecutor
 from devbox.commands.push_command import PushCommandExecutor
-from utilities.deployment_engine_factory import DeploymentEngineFactory
-from utilities.provisioning_engine_factory import ProvisioningEngineFactory
+from devbox.utilities.deployment_engine_factory import DeploymentEngineFactory
+from devbox.utilities.provisioning_engine_factory import ProvisioningEngineFactory
 
 
 @click.group()
