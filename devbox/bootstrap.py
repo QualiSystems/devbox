@@ -9,6 +9,9 @@ from utilities.provisioning_engine_factory import ProvisioningEngineFactory
 
 @click.group()
 def cli():
+    """
+    Run 'devbox COMMAND --help' for more information on a command.
+    """
     pass
 
 
@@ -53,7 +56,7 @@ def version():
 @click.option('--deploy', default='docker', help='Deployment to use',
               type=click.Choice(get_deployment_engine_names()))
 @click.option('--provision', default='ansible', help='Provisioning to use',
-              type=click.Choice([get_provisioning_engine_names()]))
+              type=click.Choice(get_provisioning_engine_names()))
 def push(path, deploy, provision):
     """
     Deploy the app
