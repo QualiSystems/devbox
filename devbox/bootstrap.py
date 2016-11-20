@@ -34,9 +34,9 @@ def templates():
 @cli.command()
 @click.argument('name')
 @click.argument('template')
-def clone():
+def init():
     """
-    Clone a template into a new directory
+    Initialize an app based on a template
     :return:
     """
     click.echo('This should clone a template from github.com/QualiSystems/devbox-templates to local directory')
