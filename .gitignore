@@ -58,3 +58,4 @@ docs/_build/
 # PyBuilder
 target/
 .idea/
+Python-3.5.0/
