@@ -3,11 +3,21 @@ import pkg_resources
 
 from devbox.commands.destroy_command import DestroyCommandExecutor
 from devbox.commands.push_command import PushCommandExecutor
+from utilities.deployment_engine_factory import DeploymentEngineFactory
+from utilities.provisioning_engine_factory import ProvisioningEngineFactory
 
 
 @click.group()
 def cli():
     pass
+
+
+def get_deployment_engine_names():
+    return DeploymentEngineFactory().get_engine_names()
+
+
+def get_provisioning_engine_names():
+    return ProvisioningEngineFactory().get_engine_names()
 
 
 @cli.command()
@@ -40,8 +50,10 @@ def version():
 
 @cli.command()
 @click.option('--path', default='devbox.yaml', help='Path to manifest file')
-@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(['docker']))
-@click.option('--provision', default='ansible', help='Provisioning to use', type=click.Choice(['ansible']))
+@click.option('--deploy', default='docker', help='Deployment to use',
+              type=click.Choice(get_deployment_engine_names()))
+@click.option('--provision', default='ansible', help='Provisioning to use',
+              type=click.Choice([get_provisioning_engine_names()]))
 def push(path, deploy, provision):
     """
     Deploy the app
@@ -51,7 +63,7 @@ def push(path, deploy, provision):
 
 @cli.command()
 @click.option('--path', default='devbox.yaml', help='Path to manifest file')
-@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(['docker']))
+@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(get_deployment_engine_names()))
 def destroy(path, deploy):
     """
     Destroy the app

@@ -13,3 +13,6 @@ class DeploymentEngineFactory(object):
         :rtype BaseDeploymentEngine
         """
         return self._deployment_engines[deployment_type]
+
+    def get_engine_names(self):
+        return self._deployment_engines.keys()

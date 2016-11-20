@@ -8,3 +8,6 @@ class ProvisioningEngineFactory(object):
 
     def get_provisioning_engine(self, provisioning_type):
         return self._provisioning_engines[provisioning_type]
+
+    def get_engine_names(self):
+        return self._provisioning_engines.keys()
