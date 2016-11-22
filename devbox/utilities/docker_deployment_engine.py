@@ -5,6 +5,9 @@ from devbox.exceptions.deployment_error import DeploymentError
 from docker import Client
 from toscaparser.tosca_template import ToscaTemplate
 
+# BASE_URL = 'tcp://127.0.0.1:2375'
+BASE_URL = 'unix://var/run/docker.sock'
+
 DEPLOYMENT_IMAGE = 'deployment_image'
 DEPLOYMENT_COMMAND = 'deployment_command'
 DEPLOYMENT_PORTS = 'deployment_ports'
@@ -18,12 +21,12 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         :type manifest: ToscaTemplate
         :return:
         """
-        cli = Client(base_url='tcp://127.0.0.1:2375')
+        cli = Client(base_url=BASE_URL)
         for node in manifest.topology_template.nodetemplates:
             self._deploy_node(node, cli)
 
     def destroy(self, manifest):
-        cli = Client(base_url='tcp://127.0.0.1:2375')
+        cli = Client(base_url=BASE_URL)
         containers = cli.containers(all=True)
         containers_dict = {container['Names'][0].strip('/'): container['Id'] for container in containers}
         for node in manifest.topology_template.nodetemplates:
@@ -45,6 +48,12 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         image = self._get_property_value(properties, DEPLOYMENT_IMAGE)
         deployment_command = self._get_property_value(properties, DEPLOYMENT_COMMAND)
         ports = self._get_property_value(properties, DEPLOYMENT_PORTS)
+        images = cli.images(name=image, quiet=False,all=True)
+        if not images:
+            if ':' not in image:
+                image += ':latest'
+            for line in cli.pull(image, stream=True):
+                click.echo(line)
         container_id = cli.create_container(name=node.name,
                                             image=image,
                                             command=deployment_command,
