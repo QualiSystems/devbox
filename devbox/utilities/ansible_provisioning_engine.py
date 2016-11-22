@@ -12,10 +12,10 @@ from devbox.utilities.base_provisioning_engine import BaseProvisioningEngine
 
 class AnsibleProvisioningEngine(BaseProvisioningEngine):
     def provision(self, manifest, deployment_results):
-        pass
         for node in manifest.topology_template.nodetemplates:
+            playbook = node.get_properties()['provisioning_instruction'].default
             click.echo('Provisioning {0}'.format(node.name))
-            self._provision_node(node.name, None)
+            self._provision_node(node.name, deployment_results[node.name].ip_address, playbook)
 
     def _provision_node(self, node_name, ip_address, playbook_name):
         options_class = namedtuple('Options',
