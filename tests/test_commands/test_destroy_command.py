@@ -1,6 +1,6 @@
 import os
 from pyfakefs import fake_filesystem_unittest
-from commands.destroy_command import DestroyCommandExecutor
+from devbox.commands.destroy_command import DestroyCommandExecutor
 
 
 class TestDestroyCommand(fake_filesystem_unittest.TestCase):
