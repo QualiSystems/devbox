@@ -15,3 +15,8 @@ class BaseDeploymentEngine(object):
     @abc.abstractmethod
     def copy(self, manifest):
         raise NotImplementedError('copy method must be implemented')
+
+    @abc.abstractmethod
+    def get_node_details(self, manifest):
+        raise NotImplementedError('get_node_details method must be implemented')
+

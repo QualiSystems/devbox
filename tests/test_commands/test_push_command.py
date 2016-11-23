@@ -1,5 +1,7 @@
 import os
 from pyfakefs import fake_filesystem_unittest
+
+from devbox.commands.info_display_command import InfoDisplayCommandExecutor
 from devbox.commands.push_command import PushCommandExecutor
 
 
@@ -54,3 +56,5 @@ node_types:
 
         # Act
         command_executor.push('devbox.yaml', 'docker', 'ansible')
+
+        InfoDisplayCommandExecutor().display_info('devbox.yaml', 'docker')

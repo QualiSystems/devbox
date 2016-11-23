@@ -1,6 +1,7 @@
 import os
 from pyfakefs import fake_filesystem_unittest
 from devbox.commands.destroy_command import DestroyCommandExecutor
+from devbox.commands.info_display_command import InfoDisplayCommandExecutor
 
 
 class TestDestroyCommand(fake_filesystem_unittest.TestCase):
@@ -43,3 +44,5 @@ node_types:
 
         # Act
         command_executor.destroy('devbox.yaml', 'docker')
+
+        InfoDisplayCommandExecutor().display_info('devbox.yaml', 'docker')

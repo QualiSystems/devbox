@@ -2,6 +2,7 @@ import click
 import pkg_resources
 
 from devbox.commands.destroy_command import DestroyCommandExecutor
+from devbox.commands.info_display_command import InfoDisplayCommandExecutor
 from devbox.commands.push_command import PushCommandExecutor
 from devbox.utilities.deployment_engine_factory import DeploymentEngineFactory
 from devbox.utilities.provisioning_engine_factory import ProvisioningEngineFactory
@@ -71,4 +72,14 @@ def destroy(path, deploy):
     """
     Destroy the app
     """
-    DestroyCommandExecutor().destroy(path, deploy)
+    DestroyCommandExecutor().destroy(path, deploy) \
+
+
+@cli.command()
+@click.option('--path', default='devbox.yaml', help='Path to manifest file')
+@click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(get_deployment_engine_names()))
+def info(path, deploy):
+    """
+    Destroy the app
+    """
+    InfoDisplayCommandExecutor().display_info(path, deploy)
