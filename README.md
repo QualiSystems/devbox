@@ -1,13 +1,32 @@
 ![quali](quali.png)
 
 
-## Installation
+## Features
 
+DevBox allows to deploy a topology as a sandbox with your code for testing, staging and production purposes.
+DevBox uses standard YAML files in OASIS TOSCA format to define the topology structure.
+DevBox uses Ansible for provisioning containers and virtual machines.
+Currently supported container provider(s): Docker
+
+## Prerequisites:
+
+Python 2.7
+
+```bash
+$ pip install ansible
+
+$ pip install docker-py
+
+```
+
+
+## Installation
 
 ```bash
 $ pip install git+git://github.com/qualisystems/devbox.git
 
 ```
+
 
 ## Usage
 
@@ -16,6 +35,13 @@ Get list of available commands:
 ```bash
 $ devbox
 ```
+
+Get help on specific command:
+
+```bash
+$ devbox <COMMAND> --help
+```
+
 
 ## Troubleshooting and Help
 
@@ -28,13 +54,6 @@ All your contributions are welcomed and encouraged.  We've compiled detailed inf
 
 * [Contributing](.github/contributing.md)
 * [Creating Pull Requests](.github/pull_request_template.md)
-
-
-## Dependencies
-
-Development of **DevBox** would not have been possible without the open source libraries it depends on:
-
-- [click](http://click.pocoo.org/5/)
 
 
 ## License
