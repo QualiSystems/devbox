@@ -36,11 +36,11 @@ class AnsibleProvisioningEngine(BaseProvisioningEngine):
         play_source = dict(
             name=playbook_name,
             hosts=ip_address,
-            gather_facts='no',
-            tasks=[
-                dict(action=dict(module='shell', args='ls'), register='shell_out'),
-                dict(action=dict(module='debug', args=dict(msg='{{shell_out.stdout}}')))
-            ]
+            gather_facts='no'
+            # ,tasks=[
+            #     dict(action=dict(module='shell', args='ls'), register='shell_out'),
+            #     dict(action=dict(module='debug', args=dict(msg='{{shell_out.stdout}}')))
+            # ]
         )
         play = Play().load(play_source, variable_manager=variable_manager, loader=loader)
         # actually run it

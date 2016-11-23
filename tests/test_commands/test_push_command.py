@@ -16,6 +16,9 @@ topology_template:
   node_templates:
     python_server1:
       type: tosca.nodes.Python
+      artifacts:
+        binaries:
+          file: binaries.zip
     python_client1:
       type: tosca.nodes.Python
 
@@ -34,8 +37,16 @@ node_types:
         default: [22, 123]
       provisioning_instruction:
         type: string
-        default: meantheory.python
+        default: playbook.yaml
 """)
+
+        self.fs.CreateFile('my-app/playbook.yaml', contents="""
+---
+- hosts: all
+  remote_user: root
+  tasks:
+""")
+        self.fs.CreateFile('my-app/binaries.zip', contents='CONTENT')
 
         os.chdir('my-app')
 

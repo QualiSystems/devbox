@@ -11,3 +11,7 @@ class BaseDeploymentEngine(object):
     @abc.abstractmethod
     def destroy(self, manifest):
         raise NotImplementedError('destroy method must be implemented')
+
+    @abc.abstractmethod
+    def copy(self, manifest):
+        raise NotImplementedError('copy method must be implemented')

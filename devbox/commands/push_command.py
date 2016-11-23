@@ -22,3 +22,6 @@ class PushCommandExecutor(object):
         click.echo(u'Provisioning using {}'.format(provisioning_type))
         provisioning_engine = self._provisioning_engine_factory.get_provisioning_engine(provisioning_type)
         provisioning_engine.provision(manifest, deployment_results)
+
+        click.echo(u'Copying artifacts')
+        deployment_engine.copy(manifest)
