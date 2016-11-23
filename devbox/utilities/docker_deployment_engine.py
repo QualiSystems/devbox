@@ -1,51 +1,54 @@
+import ast
 import os
 import tarfile
 import click
 import docker
 from io import BytesIO
 import time
-from toscaparser.tosca_template import ToscaTemplate
 import collections
 from devbox.utilities.base_deployment_engine import BaseDeploymentEngine
 from devbox.exceptions.deployment_error import DeploymentError
 
+PORTS_BINDINGS = 'ports_bindings'
 
+FILE = 'file'
+ARTIFACTS = 'artifacts'
 DEPLOYMENT_IMAGE = 'deployment_image'
 DEPLOYMENT_COMMAND = 'deployment_command'
 DEPLOYMENT_PORTS = 'deployment_ports'
 
 
 class DockerDeploymentEngine(BaseDeploymentEngine):
-    def deploy(self, manifest):
+    def deploy(self, nodes):
         """
 
-        :param manifest:
-        :type manifest: ToscaTemplate
+        :param nodes:
+        :type nodes: Node[]
         :return:
         """
         cli = docker.from_env()
         containers = self._get_containers(cli)
         results = {}
-        for node in manifest.topology_template.nodetemplates:
+        for node in nodes:
             if node.name in containers:
                 raise DeploymentError('Node ' + node.name + ' already exists')
             results[node.name] = self._deploy_node(node, cli)
         return results
 
-    def get_node_details(self, manifest):
+    def get_node_details(self, nodes):
         cli = docker.from_env()
         containers_dict = self._get_containers(cli)
         all_container_details = []
-        for node in manifest.topology_template.nodetemplates:
+        for node in nodes:
             if node.name in containers_dict:
                 container_details = self._get_container_details(cli, containers_dict[node.name])
                 all_container_details.append(container_details)
         return all_container_details
 
-    def destroy(self, manifest):
+    def destroy(self, nodes):
         cli = docker.from_env()
         containers_dict = self._get_containers(cli)
-        for node in manifest.topology_template.nodetemplates:
+        for node in nodes:
             if node.name in containers_dict:
                 container_details = self._get_container_details(cli, containers_dict[node.name])
                 if container_details.running:
@@ -54,26 +57,21 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
                 click.echo('Destroying node {0}'.format(node.name))
                 cli.remove_container(containers_dict[node.name])
 
-    def copy(self, manifest):
-        results = {}
+    def copy(self, nodes):
         cli = docker.from_env()
         containers_dict = self._get_containers(cli)
-        for node in manifest.topology_template.nodetemplates:
+        for node in nodes:
             if node.name not in containers_dict:
                 raise DeploymentError('Node ' + node.name + ' does not exists. Deploy it first')
-            if 'artifacts' in node.entity_tpl and node.entity_tpl['artifacts']:
-                artifacts = node.entity_tpl['artifacts']
-                for artifact in artifacts:
-                    artifact_file = artifacts[artifact]['file']
-                    if not os.path.exists(artifact_file):
-                        raise DeploymentError('Artifacts file {} is missing'.format(artifact_file))
-                    click.echo('Copying artifact {0} to {1}'.format(node.name, node.name))
-                    with self._create_archive(artifact_file) as archive:
-                        cli.put_archive(container=containers_dict[node.name],
-                                        path='/tmp',
-                                        data=archive)
-            # results[node.name] = self._copy(node, cli, containers_dict[node.name])
-        return results
+            for artifact in node.artifacts:
+                artifact_file = node.artifacts[artifact][FILE]
+                if not os.path.exists(artifact_file):
+                    raise DeploymentError('Artifacts file {} is missing'.format(artifact_file))
+                click.echo('Copying artifact {0} to {1}'.format(node.name, node.name))
+                with self._create_archive(artifact_file) as archive:
+                    cli.put_archive(container=containers_dict[node.name],
+                                    path='/tmp',
+                                    data=archive)
 
     @staticmethod
     def _get_containers(cli):
@@ -91,12 +89,12 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         """
 
         :param node:
-        :type node: toscaparser.nodetemplate.NodeTemplate
+        :type node: devbox.utilities.manifest_parser.Node
         :param cli
         :type cli: docker.Client
         :return:
         """
-        properties = node.get_properties()
+        properties = node.properties
         image = self._get_property_value(properties, DEPLOYMENT_IMAGE)
         deployment_command = self._get_property_value(properties, DEPLOYMENT_COMMAND)
         ports = self._get_property_value(properties, DEPLOYMENT_PORTS)
@@ -108,14 +106,17 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
             for line in cli.pull(repository=image, stream=True):
                 click.echo(line)
         click.echo('Creating node {0}'.format(node.name))
+        ports_bindings = self._get_property_value(properties=properties, property_name=PORTS_BINDINGS, default='{}')
+        host_config = cli.create_host_config(port_bindings=ast.literal_eval(ports_bindings))
         container_id = cli.create_container(name=node.name,
                                             image=image,
                                             command=deployment_command,
                                             ports=ports,
                                             tty=True,
-                                            stdin_open=True)
+                                            stdin_open=True,
+                                            host_config=host_config)
         click.echo('Starting node {0}'.format(node.name))
-        cli.start(container_id)
+        cli.start(container=container_id)
         return self._get_container_details(cli, container_id)
 
     @staticmethod
@@ -134,10 +135,13 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         return container_details
 
     @staticmethod
-    def _get_property_value(properties, property_name):
+    def _get_property_value(properties, property_name, default=None):
         if property_name not in properties:
-            raise DeploymentError('Property {0} is not set', property_name)
-        return properties[property_name].default
+            if not default:
+                raise DeploymentError('Property {0} is not set', property_name)
+            else:
+                return default
+        return properties[property_name]
 
     @staticmethod
     def _create_archive(artifact_file):

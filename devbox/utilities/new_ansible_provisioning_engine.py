@@ -62,9 +62,9 @@ class Options(object):
 
 
 class NewAnsibleProvisioningEngine(BaseProvisioningEngine):
-    def provision(self, manifest, deployment_results):
-        for node in manifest.topology_template.nodetemplates:
-            playbook = node.get_properties()['provisioning_instruction'].default
+    def provision(self, nodes, deployment_results):
+        for node in nodes:
+            playbook = node.properties['provisioning_instruction']
             click.echo('Provisioning {0}'.format(node.name))
             self._provision_node(node.name, deployment_results[node.name].ip_address, playbook)
 

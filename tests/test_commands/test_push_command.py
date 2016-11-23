@@ -18,6 +18,10 @@ topology_template:
   node_templates:
     python_server1:
       type: tosca.nodes.Python
+      properties:
+        ports_bindings:
+          type: string
+          default: "{1234:80}"
       artifacts:
         binaries:
           file: binaries.zip
@@ -36,7 +40,10 @@ node_types:
         default: /bin/sh
       deployment_ports:
         type: list
-        default: [22, 123]
+        default: [22, 1234]
+      ports_bindings:
+        type: string
+        required: false
       provisioning_instruction:
         type: string
         default: playbook.yaml
