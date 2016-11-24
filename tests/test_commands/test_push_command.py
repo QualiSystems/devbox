@@ -25,6 +25,7 @@ topology_template:
       artifacts:
         binaries:
           file: binaries.zip
+          deploy_path: mybin
     python_client1:
       type: tosca.nodes.Python
 

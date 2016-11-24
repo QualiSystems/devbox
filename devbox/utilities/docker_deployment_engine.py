@@ -9,6 +9,8 @@ import collections
 from devbox.utilities.base_deployment_engine import BaseDeploymentEngine
 from devbox.exceptions.deployment_error import DeploymentError
 
+DEPLOY_PATH = 'deploy_path'
+
 PORTS_BINDINGS = 'ports_bindings'
 
 FILE = 'file'
@@ -68,8 +70,11 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
                     raise DeploymentError('Artifacts file {} is missing'.format(artifact_file))
                 click.echo('Copying artifact {0} to {1}'.format(node.name, node.name))
                 with self._create_archive(artifact_file) as archive:
+                    deploy_path = node.artifacts[artifact][DEPLOY_PATH]
+                    exec_id = cli.exec_create(containers_dict[node.name], 'mkdir -p {}'.format(deploy_path))
+                    cli.exec_start(exec_id)
                     cli.put_archive(container=containers_dict[node.name],
-                                    path='/tmp',
+                                    path=deploy_path,
                                     data=archive)
 
     @staticmethod
