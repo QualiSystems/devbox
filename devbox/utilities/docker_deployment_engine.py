@@ -12,7 +12,6 @@ from devbox.exceptions.deployment_error import DeploymentError
 PORTS_BINDINGS = 'ports_bindings'
 
 FILE = 'file'
-ARTIFACTS = 'artifacts'
 DEPLOYMENT_IMAGE = 'deployment_image'
 DEPLOYMENT_COMMAND = 'deployment_command'
 DEPLOYMENT_PORTS = 'deployment_ports'
