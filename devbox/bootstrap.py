@@ -80,6 +80,6 @@ def destroy(path, deploy):
 @click.option('--deploy', default='docker', help='Deployment to use', type=click.Choice(get_deployment_engine_names()))
 def info(path, deploy):
     """
-    Destroy the app
+    Display information about the current state
     """
     InfoDisplayCommandExecutor().display_info(path, deploy)
