@@ -35,7 +35,7 @@ def templates():
 @cli.command()
 @click.argument('name')
 @click.argument('template')
-def init():
+def init(name, template):
     """
     Initialize an app based on a template
     :return:

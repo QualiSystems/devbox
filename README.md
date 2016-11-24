@@ -15,8 +15,6 @@ Python 2.7
 ```bash
 $ pip install ansible
 
-$ pip install docker-py
-
 ```
 
 
