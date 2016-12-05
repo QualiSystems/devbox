@@ -3,15 +3,17 @@ import click
 from devbox.utilities.deployment_engine_factory import DeploymentEngineFactory
 from devbox.utilities.manifest_parser import ManifestParser
 from devbox.utilities.provisioning_engine_factory import ProvisioningEngineFactory
+from devbox.utilities.execution_engine_factory import ExecutionEngineFactory
 
 
 class PushCommandExecutor(object):
-    def __init__(self, manifest_parser=None, deployment_engine_factory=None, provisioning_engine_factory=None):
+    def __init__(self, manifest_parser=None, deployment_engine_factory=None, provisioning_engine_factory=None, execution_engine_factory=None):
         self._provisioning_engine_factory = provisioning_engine_factory or ProvisioningEngineFactory()
         self._deployment_engine_factory = deployment_engine_factory or DeploymentEngineFactory()
         self._manifest_parser = manifest_parser or ManifestParser()
+        self._execution_engine_factory = execution_engine_factory or ExecutionEngineFactory()
 
-    def push(self, manifest_path, deployment_type, provisioning_type):
+    def push(self, manifest_path, deployment_type, provisioning_type, execution_type):
         click.echo(u'Parsing manifest {}'.format(manifest_path))
         manifest = self._manifest_parser.parse(manifest_path)
 
@@ -25,3 +27,7 @@ class PushCommandExecutor(object):
 
         click.echo(u'Copying artifacts')
         deployment_engine.copy(manifest)
+
+        click.echo(u'Executing apps using {}'.format(execution_type))
+        execution_engine = self._execution_engine_factory.get_execution_engine(execution_type)
+        execution_engine.execute(manifest, deployment_results)

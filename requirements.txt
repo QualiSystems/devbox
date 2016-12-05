@@ -6,3 +6,4 @@ giturlparse.py
 tosca-parser
 docker-py
 terminaltables
+paramiko

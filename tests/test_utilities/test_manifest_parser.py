@@ -69,6 +69,9 @@ class TestManifestParser(fake_filesystem_unittest.TestCase):
             ports_bindings:
               type: string
               default: "{1234:80}"
+            execution_command:
+              type: string
+              default: "abcd"
           artifacts:
             binaries:
               artifacts_path: /home/user/myappfolder
@@ -95,6 +98,9 @@ class TestManifestParser(fake_filesystem_unittest.TestCase):
           provisioning_instruction:
             type: string
             default: playbook.yaml
+          execution_command:
+            type: string
+            default: ""
     """)
 
         nodes = ManifestParser().parse('my-app/devbox.yaml')
@@ -103,6 +109,8 @@ class TestManifestParser(fake_filesystem_unittest.TestCase):
         self.assertEqual(nodes[0].properties['ports_bindings'], "{1234:80}")
         self.assertEqual(nodes[0].artifacts['binaries']['deploy_path'], "mybin")
         self.assertEqual(nodes[0].artifacts['binaries']['artifacts_path'], "/home/user/myappfolder")
+        self.assertEqual(nodes[0].properties['execution_command'], "abcd")
+        self.assertEqual(nodes[1].properties['execution_command'], "")
 
         self.assertTrue('ports_bindings' not in nodes[1].properties)
 
