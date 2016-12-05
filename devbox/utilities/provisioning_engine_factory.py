@@ -1,10 +1,10 @@
-from devbox.utilities.new_ansible_provisioning_engine import NewAnsibleProvisioningEngine
+from devbox.utilities.ansible_provisioning_engine import AnsibleProvisioningEngine
 
 
 class ProvisioningEngineFactory(object):
     def __init__(self):
         # noinspection SpellCheckingInspection
-        self._provisioning_engines = {'ansible': NewAnsibleProvisioningEngine()}
+        self._provisioning_engines = {'ansible': AnsibleProvisioningEngine()}
 
     def get_provisioning_engine(self, provisioning_type):
         return self._provisioning_engines[provisioning_type]
