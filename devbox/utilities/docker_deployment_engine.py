@@ -13,7 +13,7 @@ DEPLOY_PATH = 'deploy_path'
 
 PORTS_BINDINGS = 'ports_bindings'
 
-FILE = 'file'
+ARTIFACTS_PATH = 'artifacts_path'
 DEPLOYMENT_IMAGE = 'deployment_image'
 DEPLOYMENT_COMMAND = 'deployment_command'
 DEPLOYMENT_PORTS = 'deployment_ports'
@@ -65,11 +65,11 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
             if node.name not in containers_dict:
                 raise DeploymentError('Node ' + node.name + ' does not exists. Deploy it first')
             for artifact in node.artifacts:
-                artifact_file = node.artifacts[artifact][FILE]
-                if not os.path.exists(artifact_file):
-                    raise DeploymentError('Artifacts file {} is missing'.format(artifact_file))
+                artifacts_path = node.artifacts[artifact][ARTIFACTS_PATH]
+                if not os.path.exists(artifacts_path):
+                    raise DeploymentError('Artifacts file {} is missing'.format(artifacts_path))
                 click.echo('Copying artifact {0} to {1}'.format(node.name, node.name))
-                with self._create_archive(artifact_file) as archive:
+                with self._create_archive(artifacts_path) as archive:
                     deploy_path = node.artifacts[artifact][DEPLOY_PATH]
                     exec_id = cli.exec_create(containers_dict[node.name], 'mkdir -p {}'.format(deploy_path))
                     cli.exec_start(exec_id)
@@ -148,15 +148,10 @@ class DockerDeploymentEngine(BaseDeploymentEngine):
         return properties[property_name]
 
     @staticmethod
-    def _create_archive(artifact_file):
+    def _create_archive(artifacts_path):
         pw_tarstream = BytesIO()
         pw_tar = tarfile.TarFile(fileobj=pw_tarstream, mode='w')
-        file_data = open(artifact_file, 'r').read()
-        tarinfo = tarfile.TarInfo(name=artifact_file)
-        tarinfo.size = len(file_data)
-        tarinfo.mtime = time.time()
-        # tarinfo.mode = 0600
-        pw_tar.addfile(tarinfo, BytesIO(file_data))
+        pw_tar.add(artifacts_path, arcname=os.path.basename(artifacts_path))
         pw_tar.close()
         pw_tarstream.seek(0)
         return pw_tarstream

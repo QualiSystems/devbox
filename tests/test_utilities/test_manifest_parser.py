@@ -71,7 +71,7 @@ class TestManifestParser(fake_filesystem_unittest.TestCase):
               default: "{1234:80}"
           artifacts:
             binaries:
-              file: binaries.zip
+              artifacts_path: /home/user/myappfolder
               deploy_path: mybin
         python_client1:
           type: tosca.nodes.Python
@@ -102,6 +102,7 @@ class TestManifestParser(fake_filesystem_unittest.TestCase):
         self.assertEqual(nodes[0].properties['deployment_ports'], [22, 1234])
         self.assertEqual(nodes[0].properties['ports_bindings'], "{1234:80}")
         self.assertEqual(nodes[0].artifacts['binaries']['deploy_path'], "mybin")
+        self.assertEqual(nodes[0].artifacts['binaries']['artifacts_path'], "/home/user/myappfolder")
 
         self.assertTrue('ports_bindings' not in nodes[1].properties)
 
